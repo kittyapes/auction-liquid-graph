@@ -1,0 +1,17 @@
+{
+  "name": "hypex-auction-liquid-subgraph",
+  "version": "0.0.1",
+  "license": "MIT",
+  "scripts": {
+    "codegen": "graph codegen --debug --output-dir entities/",
+    "build": "graph build",
+    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ hypex-auction-liquid",
+    "create-local": "graph create --node http://localhost:8020/ hypex-auction-liquid",
+    "remove-local": "graph remove --node http://localhost:8020/ hypex-auction-liquid",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 hypex-auction-liquid"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "^0.40.0",
+    "@graphprotocol/graph-ts": "^0.29.3"
+  }
+}

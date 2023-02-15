@@ -1,0 +1,65 @@
+type Account @entity {
+  id: ID!
+  address: Bytes!
+
+  pools: [Pool!] @derivedFrom(field: "owner")
+  redeems: [Redeem!] @derivedFrom(field: "account")
+  swaps: [Swap!] @derivedFrom(field: "account")
+  auctions: [Auction!] @derivedFrom(field: "starter")
+  bids: [Bid!] @derivedFrom(field: "account")
+}
+
+type Pool @entity {
+  id: ID!
+  owner: Account!
+  mappingToken: String!
+  nft: String!
+  tokenIds: [BigInt!]
+  createdDate: BigInt!
+  lockPeriod: BigInt!
+  duration: BigInt!
+  isLinear: Boolean!
+  delta: BigInt!
+  ratio: BigInt!
+  randomFee: Int!
+  tradingFee: Int!
+  startPrice: BigInt!
+  feeTypes: [Int!]!
+  feeValues: [Int!]!
+  is721: Boolean!
+
+  redeems: [Redeem!] @derivedFrom(field: "pool")
+  swaps: [Swap!] @derivedFrom(field: "pool")
+}
+
+type Redeem @entity {
+  id: ID!
+  pool: Pool!
+  account: Account!
+  tokenIds: [BigInt!]
+}
+
+type Swap @entity {
+  id: ID!
+  pool: Pool!
+  account: Account!
+  inTokenId: BigInt!
+  outTokenId: BigInt
+}
+
+type Auction @entity {
+  id: ID!
+  pool: Pool!
+  tokenId: BigInt!
+  starter: Account!
+  highestBid: Bid
+
+  bids: [Bid!] @derivedFrom(field: "auction")
+}
+
+type Bid @entity {
+  id: ID!
+  auction: Auction!
+  account: Account!
+  amount: BigInt!
+}
