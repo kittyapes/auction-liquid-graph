@@ -6,11 +6,11 @@ import { prepareAccount } from "./account";
 export function handleCreate(event: PoolCreated): void {
   prepareAccount(event.params.owner_);
 
-  let pool = new Pool(event.address.toHexString());
+  let pool = new Pool(event.params.pool_.toHexString());
   pool.owner = event.params.owner_.toHexString();
   pool.is721 = event.params.is721_;
 
-  let poolContract = AuctionLiquidPool.bind(event.address);
+  let poolContract = AuctionLiquidPool.bind(event.params.pool_);
   pool.mappingToken = poolContract.mappingToken().toString();
   pool.nft = poolContract.nft().toString();
   pool.tokenIds = poolContract.getTokenIds();

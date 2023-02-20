@@ -16,12 +16,13 @@ dataSources:
       language: wasm/assemblyscript
       file: ./src/manager.ts
       entities:
-        - Global
         - Account
         - Pool
       abis:
         - name: AuctionLiquidPoolManager
           file: ./abis/manager.json
+        - name: AuctionLiquidPool
+          file: ./abis/pool.json
       eventHandlers:
         - event: PoolCreated(indexed address,address,bool)
           handler: handleCreate
@@ -38,7 +39,6 @@ dataSources:
       language: wasm/assemblyscript
       file: ./src/pool.ts
       entities:
-        - Global
         - Account
         - Redeem
         - Swap
