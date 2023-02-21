@@ -1,4 +1,5 @@
 import { AuctionLiquidPool } from "../entities/AuctionLiquidPool/AuctionLiquidPool";
+import { MappingToken } from "../entities/AuctionLiquidPoolManager/MappingToken";
 import { PoolCreated } from "../entities/AuctionLiquidPoolManager/AuctionLiquidPoolManager";
 import { Pool } from "../entities/schema";
 import { prepareAccount } from "./account";
@@ -11,6 +12,8 @@ export function handleCreate(event: PoolCreated): void {
   pool.is721 = event.params.is721_;
 
   let poolContract = AuctionLiquidPool.bind(event.params.pool_);
+  let tokenContract = MappingToken.bind(poolContract.mappingToken());
+  pool.name = tokenContract.name();
   pool.mappingToken = poolContract.mappingToken().toString();
   pool.nft = poolContract.nft().toString();
   pool.tokenIds = poolContract.getTokenIds();

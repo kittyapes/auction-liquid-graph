@@ -1,3 +1,4 @@
+import { BigInt } from "@graphprotocol/graph-ts";
 import {
   RedeemRequested,
   Redeemed,
@@ -7,7 +8,7 @@ import {
   AuctionEnded,
   BidPlaced,
 } from "../entities/AuctionLiquidPool/AuctionLiquidPool";
-import { Auction, Bid, Redeem, Swap } from "../entities/schema";
+import { Auction, Bid, Pool, Redeem, Swap } from "../entities/schema";
 import { prepareAccount } from "./account";
 
 export function handleRedeemRequest(event: RedeemRequested): void {
@@ -41,12 +42,15 @@ export function handleSwap(event: Swaped): void {
 
 export function handleAuctionStart(event: AuctionStarted): void {
   prepareAccount(event.params.starter);
+  let pool = Pool.load(event.address.toHexString())!;
   let auction = new Auction(
     `${event.address.toHexString()}::${event.params.tokenId}`
   );
   auction.pool = event.address.toHexString();
   auction.tokenId = event.params.tokenId;
   auction.starter = event.params.starter.toHexString();
+  auction.startAt = event.block.timestamp;
+  auction.expireAt = event.block.timestamp.plus(pool.duration);
   auction.isEnded = false;
   auction.save();
 }
@@ -77,6 +81,7 @@ export function handleAuctionEnd(event: AuctionEnded): void {
   let auction = Auction.load(
     `${event.address.toHexString()}::${event.params.tokenId}`
   )!;
+  auction.startAt = BigInt.fromI32(0);
   auction.isEnded = true;
   auction.save();
 }

@@ -11,6 +11,7 @@ type Account @entity {
 
 type Pool @entity {
   id: ID!
+  name: String!
   owner: Account!
   mappingToken: String!
   nft: String!
@@ -30,6 +31,7 @@ type Pool @entity {
 
   redeems: [Redeem!] @derivedFrom(field: "pool")
   swaps: [Swap!] @derivedFrom(field: "pool")
+  auctions: [Auction!] @derivedFrom(field: "pool")
 }
 
 type Redeem @entity {
@@ -54,6 +56,8 @@ type Auction @entity {
   starter: Account!
   highestBid: Bid
   isEnded: Boolean!
+  startAt: BigInt!
+  expireAt: BigInt!
 
   bids: [Bid!] @derivedFrom(field: "auction")
 }

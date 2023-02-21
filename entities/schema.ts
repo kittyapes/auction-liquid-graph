@@ -168,6 +168,15 @@ export class Pool extends Entity {
     this.set("id", Value.fromString(value));
   }
 
+  get name(): string {
+    let value = this.get("name");
+    return value!.toString();
+  }
+
+  set name(value: string) {
+    this.set("name", Value.fromString(value));
+  }
+
   get owner(): string {
     let value = this.get("owner");
     return value!.toString();
@@ -351,6 +360,23 @@ export class Pool extends Entity {
       this.unset("swaps");
     } else {
       this.set("swaps", Value.fromStringArray(<Array<string>>value));
+    }
+  }
+
+  get auctions(): Array<string> | null {
+    let value = this.get("auctions");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toStringArray();
+    }
+  }
+
+  set auctions(value: Array<string> | null) {
+    if (!value) {
+      this.unset("auctions");
+    } else {
+      this.set("auctions", Value.fromStringArray(<Array<string>>value));
     }
   }
 }
@@ -580,6 +606,24 @@ export class Auction extends Entity {
 
   set isEnded(value: boolean) {
     this.set("isEnded", Value.fromBoolean(value));
+  }
+
+  get startAt(): BigInt {
+    let value = this.get("startAt");
+    return value!.toBigInt();
+  }
+
+  set startAt(value: BigInt) {
+    this.set("startAt", Value.fromBigInt(value));
+  }
+
+  get expireAt(): BigInt {
+    let value = this.get("expireAt");
+    return value!.toBigInt();
+  }
+
+  set expireAt(value: BigInt) {
+    this.set("expireAt", Value.fromBigInt(value));
   }
 
   get bids(): Array<string> | null {

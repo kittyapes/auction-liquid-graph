@@ -23,6 +23,8 @@ dataSources:
           file: ./abis/manager.json
         - name: AuctionLiquidPool
           file: ./abis/pool.json
+        - name: MappingToken
+          file: ./abis/m-token.json
       eventHandlers:
         - event: PoolCreated(indexed address,address,bool)
           handler: handleCreate
