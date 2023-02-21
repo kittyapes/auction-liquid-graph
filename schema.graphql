@@ -53,6 +53,7 @@ type Auction @entity {
   tokenId: BigInt!
   starter: Account!
   highestBid: Bid
+  isEnded: Boolean!
 
   bids: [Bid!] @derivedFrom(field: "auction")
 }

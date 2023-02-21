@@ -573,6 +573,15 @@ export class Auction extends Entity {
     }
   }
 
+  get isEnded(): boolean {
+    let value = this.get("isEnded");
+    return value!.toBoolean();
+  }
+
+  set isEnded(value: boolean) {
+    this.set("isEnded", Value.fromBoolean(value));
+  }
+
   get bids(): Array<string> | null {
     let value = this.get("bids");
     if (!value || value.kind == ValueKind.NULL) {

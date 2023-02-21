@@ -47,25 +47,36 @@ export function handleAuctionStart(event: AuctionStarted): void {
   auction.pool = event.address.toHexString();
   auction.tokenId = event.params.tokenId;
   auction.starter = event.params.starter.toHexString();
+  auction.isEnded = false;
   auction.save();
 }
 
 export function handleBid(event: BidPlaced): void {
   prepareAccount(event.params.bidder);
-  let bid = new Bid(
-    `${event.address.toHexString()}::${event.params.bidder.toHexString()}::${
-      event.params.tokenId
-    }`
-  );
+  let bidId = `${event.address.toHexString()}::${event.params.bidder.toHexString()}::${
+    event.params.tokenId
+  }`;
+  let bid = new Bid(bidId);
   bid.auction = `${event.address.toHexString()}::${event.params.tokenId}`;
   bid.account = event.params.bidder.toHexString();
   bid.amount = event.params.amount;
   bid.save();
+
+  let auction = Auction.load(
+    `${event.address.toHexString()}::${event.params.tokenId}`
+  )!;
+  if (!auction.highestBid) auction.highestBid = bidId;
+  else {
+    let highestBid = Bid.load(auction.highestBid!)!;
+    if (bid.amount.gt(highestBid.amount)) auction.highestBid = bidId;
+  }
+  auction.save();
 }
 
 export function handleAuctionEnd(event: AuctionEnded): void {
-  let auction = new Auction(
+  let auction = Auction.load(
     `${event.address.toHexString()}::${event.params.tokenId}`
-  );
+  )!;
+  auction.isEnded = true;
   auction.save();
 }
