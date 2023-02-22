@@ -1,4 +1,4 @@
-import { BigInt } from "@graphprotocol/graph-ts";
+import { BigInt, log } from "@graphprotocol/graph-ts";
 import {
   RedeemRequested,
   Redeemed,
@@ -13,6 +13,10 @@ import { prepareAccount } from "./account";
 
 export function handleRedeemRequest(event: RedeemRequested): void {
   prepareAccount(event.params.account);
+  log.warning(">>>> pool info {} {}", [
+    event.address.toHexString(),
+    event.params.requestId.toString(),
+  ]);
   let redeem = new Redeem(event.params.requestId.toString());
   redeem.pool = event.address.toHexString();
   redeem.account = event.params.account.toHexString();
@@ -20,9 +24,23 @@ export function handleRedeemRequest(event: RedeemRequested): void {
 }
 
 export function handleRedeem(event: Redeemed): void {
-  let redeem = new Redeem(event.params.requestId.toString());
+  let redeem = Redeem.load(event.params.requestId.toString())!;
   redeem.tokenIds = event.params.tokenIds;
   redeem.save();
+
+  let pool = Pool.load(redeem.pool);
+  if (pool == null) return;
+
+  let tokenIds = pool.tokenIds;
+  let freeTokenIds = pool.freeTokenIds;
+  for (let i = 0; i < event.params.tokenIds.length; i++) {
+    let tokenId = event.params.tokenIds[i];
+    tokenIds.splice(tokenIds.indexOf(tokenId), 1);
+    freeTokenIds.splice(freeTokenIds.indexOf(tokenId), 1);
+  }
+  pool.tokenIds = tokenIds;
+  pool.freeTokenIds = freeTokenIds;
+  pool.save();
 }
 
 export function handleSwapRequest(event: SwapRequested): void {
@@ -30,14 +48,27 @@ export function handleSwapRequest(event: SwapRequested): void {
   let swap = new Swap(event.params.requestId.toString());
   swap.pool = event.address.toHexString();
   swap.account = event.params.account.toHexString();
-  swap.outTokenId = event.params.tokenId;
+  swap.inTokenId = event.params.tokenId;
   swap.save();
 }
 
 export function handleSwap(event: Swaped): void {
-  let swap = new Swap(event.params.requestId.toString());
-  swap.inTokenId = event.params.tokenId;
+  let swap = Swap.load(event.params.requestId.toString())!;
+  swap.outTokenId = event.params.tokenId;
   swap.save();
+
+  let pool = Pool.load(swap.pool)!;
+  if (pool == null) return;
+
+  let tokenIds = pool.tokenIds;
+  tokenIds.splice(tokenIds.indexOf(event.params.tokenId), 1);
+  pool.tokenIds = tokenIds;
+  let freeTokenIds = pool.freeTokenIds;
+  freeTokenIds.splice(freeTokenIds.indexOf(event.params.tokenId), 1);
+  pool.freeTokenIds = freeTokenIds;
+  pool.tokenIds.push(swap.inTokenId);
+  pool.freeTokenIds.push(swap.inTokenId);
+  pool.save();
 }
 
 export function handleAuctionStart(event: AuctionStarted): void {
@@ -53,6 +84,11 @@ export function handleAuctionStart(event: AuctionStarted): void {
   auction.expireAt = event.block.timestamp.plus(pool.duration);
   auction.isEnded = false;
   auction.save();
+
+  let freeTokenIds = pool.freeTokenIds;
+  freeTokenIds.splice(freeTokenIds.indexOf(event.params.tokenId), 1);
+  pool.freeTokenIds = freeTokenIds;
+  pool.save();
 }
 
 export function handleBid(event: BidPlaced): void {
@@ -84,4 +120,10 @@ export function handleAuctionEnd(event: AuctionEnded): void {
   auction.startAt = BigInt.fromI32(0);
   auction.isEnded = true;
   auction.save();
+
+  let pool = Pool.load(event.address.toHexString())!;
+  let tokenIds = pool.tokenIds;
+  tokenIds.splice(tokenIds.indexOf(event.params.tokenId), 1);
+  pool.tokenIds = tokenIds;
+  pool.save();
 }

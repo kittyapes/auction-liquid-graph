@@ -16,7 +16,8 @@ type Pool @entity {
   address: String!
   mappingToken: String!
   nft: String!
-  tokenIds: [BigInt!]
+  tokenIds: [BigInt!]!
+  freeTokenIds: [BigInt!]!
   createdDate: BigInt!
   lockPeriod: BigInt!
   duration: BigInt!

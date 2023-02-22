@@ -18,6 +18,7 @@ export function handleCreate(event: PoolCreated): void {
   pool.mappingToken = poolContract.mappingToken().toHexString();
   pool.nft = poolContract.nft().toHexString();
   pool.tokenIds = poolContract.getTokenIds();
+  pool.freeTokenIds = poolContract.getTokenIds();
   pool.createdDate = poolContract.createdAt();
   pool.lockPeriod = poolContract.lockPeriod();
   pool.duration = poolContract.duration();

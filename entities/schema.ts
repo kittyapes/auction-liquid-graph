@@ -213,21 +213,22 @@ export class Pool extends Entity {
     this.set("nft", Value.fromString(value));
   }
 
-  get tokenIds(): Array<BigInt> | null {
+  get tokenIds(): Array<BigInt> {
     let value = this.get("tokenIds");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toBigIntArray();
-    }
+    return value!.toBigIntArray();
   }
 
-  set tokenIds(value: Array<BigInt> | null) {
-    if (!value) {
-      this.unset("tokenIds");
-    } else {
-      this.set("tokenIds", Value.fromBigIntArray(<Array<BigInt>>value));
-    }
+  set tokenIds(value: Array<BigInt>) {
+    this.set("tokenIds", Value.fromBigIntArray(value));
+  }
+
+  get freeTokenIds(): Array<BigInt> {
+    let value = this.get("freeTokenIds");
+    return value!.toBigIntArray();
+  }
+
+  set freeTokenIds(value: Array<BigInt>) {
+    this.set("freeTokenIds", Value.fromBigIntArray(value));
   }
 
   get createdDate(): BigInt {
