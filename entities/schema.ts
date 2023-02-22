@@ -186,6 +186,15 @@ export class Pool extends Entity {
     this.set("owner", Value.fromString(value));
   }
 
+  get address(): string {
+    let value = this.get("address");
+    return value!.toString();
+  }
+
+  set address(value: string) {
+    this.set("address", Value.fromString(value));
+  }
+
   get mappingToken(): string {
     let value = this.get("mappingToken");
     return value!.toString();

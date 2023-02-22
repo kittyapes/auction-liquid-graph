@@ -14,6 +14,7 @@ export function handleCreate(event: PoolCreated): void {
   let poolContract = AuctionLiquidPool.bind(event.params.pool_);
   let tokenContract = MappingToken.bind(poolContract.mappingToken());
   pool.name = tokenContract.name();
+  pool.address = event.params.pool_.toHexString();
   pool.mappingToken = poolContract.mappingToken().toHexString();
   pool.nft = poolContract.nft().toHexString();
   pool.tokenIds = poolContract.getTokenIds();

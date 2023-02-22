@@ -13,6 +13,7 @@ type Pool @entity {
   id: ID!
   name: String!
   owner: Account!
+  address: String!
   mappingToken: String!
   nft: String!
   tokenIds: [BigInt!]
