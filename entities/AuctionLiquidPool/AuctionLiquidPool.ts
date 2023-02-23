@@ -98,6 +98,24 @@ export class Initialized__Params {
   }
 }
 
+export class NFTsLocked extends ethereum.Event {
+  get params(): NFTsLocked__Params {
+    return new NFTsLocked__Params(this);
+  }
+}
+
+export class NFTsLocked__Params {
+  _event: NFTsLocked;
+
+  constructor(event: NFTsLocked) {
+    this._event = event;
+  }
+
+  get tokenIds(): Array<BigInt> {
+    return this._event.parameters[0].value.toBigIntArray();
+  }
+}
+
 export class OwnershipTransferred extends ethereum.Event {
   get params(): OwnershipTransferred__Params {
     return new OwnershipTransferred__Params(this);

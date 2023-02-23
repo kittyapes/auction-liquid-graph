@@ -50,6 +50,8 @@ dataSources:
         - name: AuctionLiquidPool
           file: ./abis/pool.json
       eventHandlers:
+        - event: NFTsLocked(uint256[])
+          handler: handleLockNFTs
         - event: RedeemRequested(indexed address,uint256)
           handler: handleRedeemRequest
         - event: Redeemed(indexed address,uint256,uint256[])

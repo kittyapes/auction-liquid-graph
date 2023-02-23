@@ -1,4 +1,4 @@
-import { BigInt, log } from "@graphprotocol/graph-ts";
+import { BigInt } from "@graphprotocol/graph-ts";
 import {
   RedeemRequested,
   Redeemed,
@@ -7,16 +7,29 @@ import {
   AuctionStarted,
   AuctionEnded,
   BidPlaced,
+  NFTsLocked,
 } from "../entities/AuctionLiquidPool/AuctionLiquidPool";
 import { Auction, Bid, Pool, Redeem, Swap } from "../entities/schema";
 import { prepareAccount } from "./account";
 
+export function handleLockNFTs(event: NFTsLocked): void {
+  let pool = Pool.load(event.address.toHexString());
+  if (pool == null) return;
+
+  let tokenIds = pool.tokenIds;
+  let freeTokenIds = pool.freeTokenIds;
+  for (let i = 0; i < event.params.tokenIds.length; i++) {
+    let tokenId = event.params.tokenIds[i];
+    tokenIds.push(tokenId);
+    freeTokenIds.push(tokenId);
+  }
+  pool.tokenIds = tokenIds;
+  pool.freeTokenIds = freeTokenIds;
+  pool.save();
+}
+
 export function handleRedeemRequest(event: RedeemRequested): void {
   prepareAccount(event.params.account);
-  log.warning(">>>> pool info {} {}", [
-    event.address.toHexString(),
-    event.params.requestId.toString(),
-  ]);
   let redeem = new Redeem(event.params.requestId.toString());
   redeem.pool = event.address.toHexString();
   redeem.account = event.params.account.toHexString();
