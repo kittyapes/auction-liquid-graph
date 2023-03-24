@@ -117,7 +117,8 @@ export function handleBid(event: BidPlaced): void {
 
   let auction = Auction.load(
     `${event.address.toHexString()}::${event.params.tokenId}`
-  )!;
+  );
+  if (!auction) return;
   if (!auction.highestBid) auction.highestBid = bidId;
   else {
     let highestBid = Bid.load(auction.highestBid!)!;
