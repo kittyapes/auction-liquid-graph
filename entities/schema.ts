@@ -11,6 +11,47 @@ import {
   BigDecimal
 } from "@graphprotocol/graph-ts";
 
+export class Global extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Global entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type Global must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("Global", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Global | null {
+    return changetype<Global | null>(store.get("Global", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get value(): BigInt {
+    let value = this.get("value");
+    return value!.toBigInt();
+  }
+
+  set value(value: BigInt) {
+    this.set("value", Value.fromBigInt(value));
+  }
+}
+
 export class Account extends Entity {
   constructor(id: string) {
     super();
@@ -440,21 +481,13 @@ export class Redeem extends Entity {
     this.set("account", Value.fromString(value));
   }
 
-  get tokenIds(): Array<BigInt> | null {
+  get tokenIds(): Array<BigInt> {
     let value = this.get("tokenIds");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toBigIntArray();
-    }
+    return value!.toBigIntArray();
   }
 
-  set tokenIds(value: Array<BigInt> | null) {
-    if (!value) {
-      this.unset("tokenIds");
-    } else {
-      this.set("tokenIds", Value.fromBigIntArray(<Array<BigInt>>value));
-    }
+  set tokenIds(value: Array<BigInt>) {
+    this.set("tokenIds", Value.fromBigIntArray(value));
   }
 }
 
@@ -516,21 +549,13 @@ export class Swap extends Entity {
     this.set("inTokenId", Value.fromBigInt(value));
   }
 
-  get outTokenId(): BigInt | null {
+  get outTokenId(): BigInt {
     let value = this.get("outTokenId");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toBigInt();
-    }
+    return value!.toBigInt();
   }
 
-  set outTokenId(value: BigInt | null) {
-    if (!value) {
-      this.unset("outTokenId");
-    } else {
-      this.set("outTokenId", Value.fromBigInt(<BigInt>value));
-    }
+  set outTokenId(value: BigInt) {
+    this.set("outTokenId", Value.fromBigInt(value));
   }
 }
 

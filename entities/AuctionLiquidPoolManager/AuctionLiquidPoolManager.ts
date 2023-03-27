@@ -294,25 +294,6 @@ export class AuctionLiquidPoolManager extends ethereum.SmartContract {
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
-
-  vrfCoordinator(): Address {
-    let result = super.call("vrfCoordinator", "vrfCoordinator():(address)", []);
-
-    return result[0].toAddress();
-  }
-
-  try_vrfCoordinator(): ethereum.CallResult<Address> {
-    let result = super.tryCall(
-      "vrfCoordinator",
-      "vrfCoordinator():(address)",
-      []
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toAddress());
-  }
 }
 
 export class CreatePoolCall extends ethereum.Call {
@@ -426,12 +407,8 @@ export class InitializeCall__Inputs {
     this._call = call;
   }
 
-  get coordinator_(): Address {
+  get token(): Address {
     return this._call.inputValues[0].value.toAddress();
-  }
-
-  get token_(): Address {
-    return this._call.inputValues[1].value.toAddress();
   }
 }
 
@@ -465,6 +442,36 @@ export class RenounceOwnershipCall__Outputs {
   _call: RenounceOwnershipCall;
 
   constructor(call: RenounceOwnershipCall) {
+    this._call = call;
+  }
+}
+
+export class SetDexTokenCall extends ethereum.Call {
+  get inputs(): SetDexTokenCall__Inputs {
+    return new SetDexTokenCall__Inputs(this);
+  }
+
+  get outputs(): SetDexTokenCall__Outputs {
+    return new SetDexTokenCall__Outputs(this);
+  }
+}
+
+export class SetDexTokenCall__Inputs {
+  _call: SetDexTokenCall;
+
+  constructor(call: SetDexTokenCall) {
+    this._call = call;
+  }
+
+  get token(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class SetDexTokenCall__Outputs {
+  _call: SetDexTokenCall;
+
+  constructor(call: SetDexTokenCall) {
     this._call = call;
   }
 }

@@ -111,8 +111,12 @@ export class NFTsLocked__Params {
     this._event = event;
   }
 
+  get account(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
   get tokenIds(): Array<BigInt> {
-    return this._event.parameters[0].value.toBigIntArray();
+    return this._event.parameters[1].value.toBigIntArray();
   }
 }
 
@@ -138,28 +142,6 @@ export class OwnershipTransferred__Params {
   }
 }
 
-export class RedeemRequested extends ethereum.Event {
-  get params(): RedeemRequested__Params {
-    return new RedeemRequested__Params(this);
-  }
-}
-
-export class RedeemRequested__Params {
-  _event: RedeemRequested;
-
-  constructor(event: RedeemRequested) {
-    this._event = event;
-  }
-
-  get account(): Address {
-    return this._event.parameters[0].value.toAddress();
-  }
-
-  get requestId(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
-  }
-}
-
 export class Redeemed extends ethereum.Event {
   get params(): Redeemed__Params {
     return new Redeemed__Params(this);
@@ -177,38 +159,8 @@ export class Redeemed__Params {
     return this._event.parameters[0].value.toAddress();
   }
 
-  get requestId(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
-  }
-
   get tokenIds(): Array<BigInt> {
-    return this._event.parameters[2].value.toBigIntArray();
-  }
-}
-
-export class SwapRequested extends ethereum.Event {
-  get params(): SwapRequested__Params {
-    return new SwapRequested__Params(this);
-  }
-}
-
-export class SwapRequested__Params {
-  _event: SwapRequested;
-
-  constructor(event: SwapRequested) {
-    this._event = event;
-  }
-
-  get account(): Address {
-    return this._event.parameters[0].value.toAddress();
-  }
-
-  get tokenId(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
-  }
-
-  get requestId(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
+    return this._event.parameters[1].value.toBigIntArray();
   }
 }
 
@@ -229,11 +181,11 @@ export class Swaped__Params {
     return this._event.parameters[0].value.toAddress();
   }
 
-  get requestId(): BigInt {
+  get srcTokenId(): BigInt {
     return this._event.parameters[1].value.toBigInt();
   }
 
-  get tokenId(): BigInt {
+  get dstTokenId(): BigInt {
     return this._event.parameters[2].value.toBigInt();
   }
 }
@@ -639,65 +591,23 @@ export class AuctionLiquidPool extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  redeem(count: BigInt): BigInt {
-    let result = super.call("redeem", "redeem(uint32):(uint256)", [
+  redeem(count: BigInt): Array<BigInt> {
+    let result = super.call("redeem", "redeem(uint32):(uint256[])", [
       ethereum.Value.fromUnsignedBigInt(count)
     ]);
 
-    return result[0].toBigInt();
+    return result[0].toBigIntArray();
   }
 
-  try_redeem(count: BigInt): ethereum.CallResult<BigInt> {
-    let result = super.tryCall("redeem", "redeem(uint32):(uint256)", [
+  try_redeem(count: BigInt): ethereum.CallResult<Array<BigInt>> {
+    let result = super.tryCall("redeem", "redeem(uint32):(uint256[])", [
       ethereum.Value.fromUnsignedBigInt(count)
     ]);
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
-  redeemers(param0: BigInt): Address {
-    let result = super.call("redeemers", "redeemers(uint256):(address)", [
-      ethereum.Value.fromUnsignedBigInt(param0)
-    ]);
-
-    return result[0].toAddress();
-  }
-
-  try_redeemers(param0: BigInt): ethereum.CallResult<Address> {
-    let result = super.tryCall("redeemers", "redeemers(uint256):(address)", [
-      ethereum.Value.fromUnsignedBigInt(param0)
-    ]);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toAddress());
-  }
-
-  s_subscriptionId(): BigInt {
-    let result = super.call(
-      "s_subscriptionId",
-      "s_subscriptionId():(uint64)",
-      []
-    );
-
-    return result[0].toBigInt();
-  }
-
-  try_s_subscriptionId(): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "s_subscriptionId",
-      "s_subscriptionId():(uint64)",
-      []
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
+    return ethereum.CallResult.fromValue(value[0].toBigIntArray());
   }
 
   startPrice(): BigInt {
@@ -726,44 +636,6 @@ export class AuctionLiquidPool extends ethereum.SmartContract {
   try_swap(tokenId: BigInt): ethereum.CallResult<BigInt> {
     let result = super.tryCall("swap", "swap(uint256):(uint256)", [
       ethereum.Value.fromUnsignedBigInt(tokenId)
-    ]);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
-  swapper(param0: BigInt): Address {
-    let result = super.call("swapper", "swapper(uint256):(address)", [
-      ethereum.Value.fromUnsignedBigInt(param0)
-    ]);
-
-    return result[0].toAddress();
-  }
-
-  try_swapper(param0: BigInt): ethereum.CallResult<Address> {
-    let result = super.tryCall("swapper", "swapper(uint256):(address)", [
-      ethereum.Value.fromUnsignedBigInt(param0)
-    ]);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toAddress());
-  }
-
-  swaps(param0: BigInt): BigInt {
-    let result = super.call("swaps", "swaps(uint256):(uint256)", [
-      ethereum.Value.fromUnsignedBigInt(param0)
-    ]);
-
-    return result[0].toBigInt();
-  }
-
-  try_swaps(param0: BigInt): ethereum.CallResult<BigInt> {
-    let result = super.tryCall("swaps", "swaps(uint256):(uint256)", [
-      ethereum.Value.fromUnsignedBigInt(param0)
     ]);
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -818,62 +690,6 @@ export class BidCall__Outputs {
   }
 }
 
-export class CancelSubscriptionCall extends ethereum.Call {
-  get inputs(): CancelSubscriptionCall__Inputs {
-    return new CancelSubscriptionCall__Inputs(this);
-  }
-
-  get outputs(): CancelSubscriptionCall__Outputs {
-    return new CancelSubscriptionCall__Outputs(this);
-  }
-}
-
-export class CancelSubscriptionCall__Inputs {
-  _call: CancelSubscriptionCall;
-
-  constructor(call: CancelSubscriptionCall) {
-    this._call = call;
-  }
-}
-
-export class CancelSubscriptionCall__Outputs {
-  _call: CancelSubscriptionCall;
-
-  constructor(call: CancelSubscriptionCall) {
-    this._call = call;
-  }
-}
-
-export class ChargeLINKCall extends ethereum.Call {
-  get inputs(): ChargeLINKCall__Inputs {
-    return new ChargeLINKCall__Inputs(this);
-  }
-
-  get outputs(): ChargeLINKCall__Outputs {
-    return new ChargeLINKCall__Outputs(this);
-  }
-}
-
-export class ChargeLINKCall__Inputs {
-  _call: ChargeLINKCall;
-
-  constructor(call: ChargeLINKCall) {
-    this._call = call;
-  }
-
-  get amount(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-}
-
-export class ChargeLINKCall__Outputs {
-  _call: ChargeLINKCall;
-
-  constructor(call: ChargeLINKCall) {
-    this._call = call;
-  }
-}
-
 export class EndAuctionCall extends ethereum.Call {
   get inputs(): EndAuctionCall__Inputs {
     return new EndAuctionCall__Inputs(this);
@@ -921,21 +737,17 @@ export class InitializeCall__Inputs {
     this._call = call;
   }
 
-  get coordinator(): Address {
+  get token(): Address {
     return this._call.inputValues[0].value.toAddress();
   }
 
-  get token(): Address {
-    return this._call.inputValues[1].value.toAddress();
-  }
-
   get mToken(): Address {
-    return this._call.inputValues[2].value.toAddress();
+    return this._call.inputValues[1].value.toAddress();
   }
 
   get params(): InitializeCallParamsStruct {
     return changetype<InitializeCallParamsStruct>(
-      this._call.inputValues[3].value.toTuple()
+      this._call.inputValues[2].value.toTuple()
     );
   }
 }
@@ -1036,40 +848,6 @@ export class LockNFTsCall__Outputs {
   }
 }
 
-export class ManageConsumersCall extends ethereum.Call {
-  get inputs(): ManageConsumersCall__Inputs {
-    return new ManageConsumersCall__Inputs(this);
-  }
-
-  get outputs(): ManageConsumersCall__Outputs {
-    return new ManageConsumersCall__Outputs(this);
-  }
-}
-
-export class ManageConsumersCall__Inputs {
-  _call: ManageConsumersCall;
-
-  constructor(call: ManageConsumersCall) {
-    this._call = call;
-  }
-
-  get consumer(): Address {
-    return this._call.inputValues[0].value.toAddress();
-  }
-
-  get add(): boolean {
-    return this._call.inputValues[1].value.toBoolean();
-  }
-}
-
-export class ManageConsumersCall__Outputs {
-  _call: ManageConsumersCall;
-
-  constructor(call: ManageConsumersCall) {
-    this._call = call;
-  }
-}
-
 export class OnERC721ReceivedCall extends ethereum.Call {
   get inputs(): OnERC721ReceivedCall__Inputs {
     return new OnERC721ReceivedCall__Inputs(this);
@@ -1113,40 +891,6 @@ export class OnERC721ReceivedCall__Outputs {
 
   get value0(): Bytes {
     return this._call.outputValues[0].value.toBytes();
-  }
-}
-
-export class RawFulfillRandomWordsCall extends ethereum.Call {
-  get inputs(): RawFulfillRandomWordsCall__Inputs {
-    return new RawFulfillRandomWordsCall__Inputs(this);
-  }
-
-  get outputs(): RawFulfillRandomWordsCall__Outputs {
-    return new RawFulfillRandomWordsCall__Outputs(this);
-  }
-}
-
-export class RawFulfillRandomWordsCall__Inputs {
-  _call: RawFulfillRandomWordsCall;
-
-  constructor(call: RawFulfillRandomWordsCall) {
-    this._call = call;
-  }
-
-  get requestId(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-
-  get randomWords(): Array<BigInt> {
-    return this._call.inputValues[1].value.toBigIntArray();
-  }
-}
-
-export class RawFulfillRandomWordsCall__Outputs {
-  _call: RawFulfillRandomWordsCall;
-
-  constructor(call: RawFulfillRandomWordsCall) {
-    this._call = call;
   }
 }
 
@@ -1261,8 +1005,8 @@ export class RedeemCall__Outputs {
     this._call = call;
   }
 
-  get requestId(): BigInt {
-    return this._call.outputValues[0].value.toBigInt();
+  get tokenIds_(): Array<BigInt> {
+    return this._call.outputValues[0].value.toBigIntArray();
   }
 }
 
@@ -1351,7 +1095,7 @@ export class SwapCall__Outputs {
     this._call = call;
   }
 
-  get requestId(): BigInt {
+  get dstTokenId(): BigInt {
     return this._call.outputValues[0].value.toBigInt();
   }
 }

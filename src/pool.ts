@@ -1,15 +1,13 @@
 import { BigInt } from "@graphprotocol/graph-ts";
 import {
-  RedeemRequested,
   Redeemed,
-  SwapRequested,
   Swaped,
   AuctionStarted,
   AuctionEnded,
   BidPlaced,
   NFTsLocked,
 } from "../entities/AuctionLiquidPool/AuctionLiquidPool";
-import { Auction, Bid, Pool, Redeem, Swap } from "../entities/schema";
+import { Global, Auction, Bid, Pool, Redeem, Swap } from "../entities/schema";
 import { prepareAccount } from "./account";
 
 export function handleLockNFTs(event: NFTsLocked): void {
@@ -28,18 +26,23 @@ export function handleLockNFTs(event: NFTsLocked): void {
   pool.save();
 }
 
-export function handleRedeemRequest(event: RedeemRequested): void {
+export function handleRedeem(event: Redeemed): void {
   prepareAccount(event.params.account);
-  let redeem = new Redeem(event.params.requestId.toString());
+
+  let redeemKey = `Redeem::${event.address.toHexString()}::${event.params.account.toHexString()}`;
+  let redeemCount = Global.load(redeemKey);
+  if (redeemCount == null) {
+    redeemCount = new Global(redeemKey);
+    redeemCount.value = BigInt.fromI32(0);
+  }
+  redeemCount.value = redeemCount.value.plus(BigInt.fromI32(1));
+
+  let redeem = new Redeem(`${redeemKey}::${redeemCount.value}`);
   redeem.pool = event.address.toHexString();
   redeem.account = event.params.account.toHexString();
-  redeem.save();
-}
-
-export function handleRedeem(event: Redeemed): void {
-  let redeem = Redeem.load(event.params.requestId.toString())!;
   redeem.tokenIds = event.params.tokenIds;
   redeem.save();
+  redeemCount.save();
 
   let pool = Pool.load(redeem.pool);
   if (pool == null) return;
@@ -56,28 +59,32 @@ export function handleRedeem(event: Redeemed): void {
   pool.save();
 }
 
-export function handleSwapRequest(event: SwapRequested): void {
+export function handleSwap(event: Swaped): void {
   prepareAccount(event.params.account);
-  let swap = new Swap(event.params.requestId.toString());
+
+  let swapKey = `Swap::${event.address.toHexString()}::${event.params.account.toHexString()}`;
+  let swapCount = Global.load(swapKey);
+  if (swapCount == null) {
+    swapCount = new Global(swapKey);
+    swapCount.value = BigInt.fromI32(0);
+  }
+  swapCount.value = swapCount.value.plus(BigInt.fromI32(1));
+
+  let swap = new Swap(`${swapKey}::${swapCount.value}`);
   swap.pool = event.address.toHexString();
   swap.account = event.params.account.toHexString();
-  swap.inTokenId = event.params.tokenId;
-  swap.save();
-}
-
-export function handleSwap(event: Swaped): void {
-  let swap = Swap.load(event.params.requestId.toString())!;
-  swap.outTokenId = event.params.tokenId;
+  swap.inTokenId = event.params.srcTokenId;
+  swap.outTokenId = event.params.dstTokenId;
   swap.save();
 
   let pool = Pool.load(swap.pool)!;
   if (pool == null) return;
 
   let tokenIds = pool.tokenIds;
-  tokenIds.splice(tokenIds.indexOf(event.params.tokenId), 1);
+  tokenIds.splice(tokenIds.indexOf(swap.outTokenId), 1);
   pool.tokenIds = tokenIds;
   let freeTokenIds = pool.freeTokenIds;
-  freeTokenIds.splice(freeTokenIds.indexOf(event.params.tokenId), 1);
+  freeTokenIds.splice(freeTokenIds.indexOf(swap.outTokenId), 1);
   pool.freeTokenIds = freeTokenIds;
   pool.tokenIds.push(swap.inTokenId);
   pool.freeTokenIds.push(swap.inTokenId);

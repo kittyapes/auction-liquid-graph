@@ -7,9 +7,9 @@ dataSources:
     name: AuctionLiquidPoolManager
     network: goerli
     source:
-      address: "0xA42a561C613412BC149D28fC4b1F3aA013Ee2423"
+      address: "0xD94272E7037BAE96D27754D68538beCf3Dfb30D1"
       abi: AuctionLiquidPoolManager
-      startBlock: 8497264
+      startBlock: 8722072
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -34,13 +34,14 @@ dataSources:
     network: goerli
     source:
       abi: AuctionLiquidPool
-      startBlock: 8497264
+      startBlock: 8727072
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/pool.ts
       entities:
+        - Global
         - Account
         - Redeem
         - Swap
@@ -50,14 +51,10 @@ dataSources:
         - name: AuctionLiquidPool
           file: ./abis/pool.json
       eventHandlers:
-        - event: NFTsLocked(uint256[])
+        - event: NFTsLocked(indexed address,uint256[])
           handler: handleLockNFTs
-        - event: RedeemRequested(indexed address,uint256)
-          handler: handleRedeemRequest
-        - event: Redeemed(indexed address,uint256,uint256[])
+        - event: Redeemed(indexed address,uint256[])
           handler: handleRedeem
-        - event: SwapRequested(indexed address,uint256,uint256)
-          handler: handleSwapRequest
         - event: Swaped(indexed address,uint256,uint256)
           handler: handleSwap
         - event: AuctionStarted(indexed uint256,indexed address)
