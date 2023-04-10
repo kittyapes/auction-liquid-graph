@@ -66,6 +66,11 @@
             "type": "string"
           },
           {
+            "internalType": "string",
+            "name": "logo",
+            "type": "string"
+          },
+          {
             "internalType": "address",
             "name": "owner",
             "type": "address"

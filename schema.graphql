@@ -17,6 +17,7 @@ type Account @entity {
 type Pool @entity {
   id: ID!
   name: String!
+  logo: String!
   owner: Account!
   address: String!
   mappingToken: String!

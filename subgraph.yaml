@@ -7,9 +7,9 @@ dataSources:
     name: AuctionLiquidPoolManager
     network: goerli
     source:
-      address: "0xD94272E7037BAE96D27754D68538beCf3Dfb30D1"
+      address: "0xaECe33cD46A3E982ac503Aa306b4B5905b39Ec94"
       abi: AuctionLiquidPoolManager
-      startBlock: 8722072
+      startBlock: 8803933
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -34,7 +34,7 @@ dataSources:
     network: goerli
     source:
       abi: AuctionLiquidPool
-      startBlock: 8727072
+      startBlock: 8803933
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6

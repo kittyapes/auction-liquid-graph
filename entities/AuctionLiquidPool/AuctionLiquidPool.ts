@@ -458,6 +458,21 @@ export class AuctionLiquidPool extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
+  logo(): string {
+    let result = super.call("logo", "logo():(string)", []);
+
+    return result[0].toString();
+  }
+
+  try_logo(): ethereum.CallResult<string> {
+    let result = super.tryCall("logo", "logo():(string)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toString());
+  }
+
   manager(): Address {
     let result = super.call("manager", "manager():(address)", []);
 
@@ -765,56 +780,60 @@ export class InitializeCallParamsStruct extends ethereum.Tuple {
     return this[0].toString();
   }
 
-  get owner(): Address {
-    return this[1].toAddress();
+  get logo(): string {
+    return this[1].toString();
   }
 
-  get nft(): Address {
+  get owner(): Address {
     return this[2].toAddress();
   }
 
-  get lockPeriod(): BigInt {
-    return this[3].toBigInt();
+  get nft(): Address {
+    return this[3].toAddress();
   }
 
-  get duration(): BigInt {
+  get lockPeriod(): BigInt {
     return this[4].toBigInt();
   }
 
+  get duration(): BigInt {
+    return this[5].toBigInt();
+  }
+
   get tokenIds(): Array<BigInt> {
-    return this[5].toBigIntArray();
+    return this[6].toBigIntArray();
   }
 
   get isLinear(): boolean {
-    return this[6].toBoolean();
+    return this[7].toBoolean();
   }
 
   get delta(): BigInt {
-    return this[7].toBigInt();
-  }
-
-  get ratio(): BigInt {
     return this[8].toBigInt();
   }
 
-  get randomFee(): i32 {
-    return this[9].toI32();
+  get ratio(): BigInt {
+    return this[9].toBigInt();
   }
 
-  get tradingFee(): i32 {
+  get randomFee(): i32 {
     return this[10].toI32();
   }
 
+  get tradingFee(): i32 {
+    return this[11].toI32();
+  }
+
   get startPrice(): BigInt {
-    return this[11].toBigInt();
+    return this[12].toBigInt();
   }
 
   get feeTypes(): Array<i32> {
-    return this[12].toI32Array();
+    return this[13].toI32Array();
   }
 
   get feeValues(): Array<i32> {
-    return this[13].toI32Array();
+    return this[14].toI32Array();
   }
 }
 

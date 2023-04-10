@@ -374,6 +374,11 @@
             "type": "string"
           },
           {
+            "internalType": "string",
+            "name": "logo",
+            "type": "string"
+          },
+          {
             "internalType": "address",
             "name": "owner",
             "type": "address"
@@ -483,6 +488,19 @@
         "internalType": "uint64",
         "name": "",
         "type": "uint64"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "logo",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
       }
     ],
     "stateMutability": "view",

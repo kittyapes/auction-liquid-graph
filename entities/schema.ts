@@ -218,6 +218,15 @@ export class Pool extends Entity {
     this.set("name", Value.fromString(value));
   }
 
+  get logo(): string {
+    let value = this.get("logo");
+    return value!.toString();
+  }
+
+  set logo(value: string) {
+    this.set("logo", Value.fromString(value));
+  }
+
   get owner(): string {
     let value = this.get("owner");
     return value!.toString();
