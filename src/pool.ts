@@ -82,12 +82,12 @@ export function handleSwap(event: Swaped): void {
 
   let tokenIds = pool.tokenIds;
   tokenIds.splice(tokenIds.indexOf(swap.outTokenId), 1);
-  pool.tokenIds = tokenIds;
+  tokenIds.push(swap.inTokenId);
   let freeTokenIds = pool.freeTokenIds;
   freeTokenIds.splice(freeTokenIds.indexOf(swap.outTokenId), 1);
+  freeTokenIds.push(swap.inTokenId);
+  pool.tokenIds = tokenIds;
   pool.freeTokenIds = freeTokenIds;
-  pool.tokenIds.push(swap.inTokenId);
-  pool.freeTokenIds.push(swap.inTokenId);
   pool.save();
 }
 
