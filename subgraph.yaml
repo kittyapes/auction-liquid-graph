@@ -18,6 +18,7 @@ dataSources:
       entities:
         - Account
         - Pool
+        - TokenList
       abis:
         - name: AuctionLiquidPoolManager
           file: ./abis/manager.json
@@ -63,3 +64,25 @@ dataSources:
           handler: handleBid
         - event: AuctionEnded(indexed uint256,indexed address)
           handler: handleAuctionEnd
+
+templates:
+  - kind: ethereum/contract
+    name: MappingToken
+    network: goerli
+    source:
+      abi: MappingToken
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/token.ts
+      entities:
+        - Account
+        - Snapshot
+        - TokenList
+      abis:
+        - name: MappingToken
+          file: ./abis/m-token.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer

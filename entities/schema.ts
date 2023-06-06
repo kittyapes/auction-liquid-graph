@@ -52,6 +52,97 @@ export class Global extends Entity {
   }
 }
 
+export class TokenList extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save TokenList entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type TokenList must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("TokenList", id.toString(), this);
+    }
+  }
+
+  static load(id: string): TokenList | null {
+    return changetype<TokenList | null>(store.get("TokenList", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+}
+
+export class Snapshot extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Snapshot entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type Snapshot must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("Snapshot", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Snapshot | null {
+    return changetype<Snapshot | null>(store.get("Snapshot", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get account(): string {
+    let value = this.get("account");
+    return value!.toString();
+  }
+
+  set account(value: string) {
+    this.set("account", Value.fromString(value));
+  }
+
+  get balance(): BigInt {
+    let value = this.get("balance");
+    return value!.toBigInt();
+  }
+
+  set balance(value: BigInt) {
+    this.set("balance", Value.fromBigInt(value));
+  }
+
+  get timestamp(): BigInt {
+    let value = this.get("timestamp");
+    return value!.toBigInt();
+  }
+
+  set timestamp(value: BigInt) {
+    this.set("timestamp", Value.fromBigInt(value));
+  }
+}
+
 export class Account extends Entity {
   constructor(id: string) {
     super();
@@ -174,6 +265,23 @@ export class Account extends Entity {
       this.unset("bids");
     } else {
       this.set("bids", Value.fromStringArray(<Array<string>>value));
+    }
+  }
+
+  get snapshots(): Array<string> | null {
+    let value = this.get("snapshots");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toStringArray();
+    }
+  }
+
+  set snapshots(value: Array<string> | null) {
+    if (!value) {
+      this.unset("snapshots");
+    } else {
+      this.set("snapshots", Value.fromStringArray(<Array<string>>value));
     }
   }
 }

@@ -3,6 +3,17 @@ type Global @entity {
   value: BigInt!
 }
 
+type TokenList @entity {
+  id: ID!
+}
+
+type Snapshot @entity {
+  id: ID!
+  account: Account!
+  balance: BigInt!
+  timestamp: BigInt!
+}
+
 type Account @entity {
   id: ID!
   address: Bytes!
@@ -12,6 +23,7 @@ type Account @entity {
   swaps: [Swap!] @derivedFrom(field: "account")
   auctions: [Auction!] @derivedFrom(field: "starter")
   bids: [Bid!] @derivedFrom(field: "account")
+  snapshots: [Snapshot!] @derivedFrom(field: "account")
 }
 
 type Pool @entity {
